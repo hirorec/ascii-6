@@ -1,0 +1,1 @@
+export const FIX_SIZE = 9
