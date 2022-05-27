@@ -8,7 +8,9 @@ uniform float iOffset;
 uniform float iTime;
 uniform float iProgress;
 uniform vec2 iSegments;
-// uniform float iSegmentSize;
+uniform vec2 iResolution;
+uniform vec2 iPlaneSize;
+uniform float iGridSize;
 uniform int iColorMode;
 uniform bool iVisible;
 
@@ -23,7 +25,6 @@ float random(in vec2 _st) {
 
 void main(){
   if (!iVisible) {
-    gl_FragColor = vec4(0.0);
     discard;
     return;
   }
@@ -42,17 +43,19 @@ void main(){
 
   vec4 texture1 = texture2D(iTexture, fixedUv);
 
-  float x = (fixedUv.x / iSegments.x) + floor(fixedUv.x * iSegments.x) / iSegments.x;
-  float y = (fixedUv.y / iSegments.y) + floor(fixedUv.y * iSegments.y) / iSegments.y;
+  vec2 size = iSegments * (iPlaneSize / iResolution);
+  vec2 uv = vUv;
+  uv -= 0.5;
+  uv = floor(uv * size) / size;
+  uv += 0.5;
   
-  // vec4 texture2 = texture2D(iTexture, fixedUv);
-  vec4 texture2 = texture2D(iTexture, vec2(x, y));
+  vec4 texture2 = texture2D(iTexture, uv);
   float grayColor = dot(texture2.rgb, monochromeScale);
   grayColor = 1.0 - smoothstep(0.0, 1.0, grayColor);
 
-  vec4 texture3 = texture2D(iTexture, fixedUv);
-  float grayColor2 = dot(texture3.rgb, monochromeScale);
-  grayColor2 = 1.0 - smoothstep(0.0, 1.0, grayColor2);
+  // vec4 texture3 = texture2D(iTexture, fixedUv);
+  // float grayColor2 = dot(texture3.rgb, monochromeScale);
+  // grayColor2 = 1.0 - smoothstep(0.0, 1.0, grayColor2);
 
   // float threshold = 0.1;
   // float a = step(threshold, (1.0 - x) * iProgress);
@@ -106,6 +109,6 @@ void main(){
 
   // gl_FragColor = vec4(vec3(color.a), 1.0);
   gl_FragColor = color;
-  // gl_FragColor = vec4(vec3(texture2.rgb), 0.3);
+  // gl_FragColor = vec4(vec3(texture2.rgb), 0.8);
   // gl_FragColor = vec4(vUv.x, vUv.y, 0.0, 1.0);
 }

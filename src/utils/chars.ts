@@ -30,7 +30,11 @@ export const createCharsMap = (black: boolean = false, transparent: boolean = fa
   }
   
   str.split('').forEach((char, i) => {
-    ctx.fillText(char, fontSize * i + 4, 1)
+    if (i === 0) {
+      ctx.fillRect(fontSize / 2, fontSize / 2, 1, 1);
+    } else {
+      ctx.fillText(char, fontSize * i + 4, 1.5)
+    }
   })
 
   return canvas.toDataURL()

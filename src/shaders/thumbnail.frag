@@ -7,8 +7,11 @@ uniform float iTime;
 uniform float iProgress;
 uniform int iType;
 
-
 float PI = 3.1415926535897932384626433832795;
+
+float random(in vec2 _st) {
+  return fract(sin(dot(_st.xy, vec2(12.9898, 78.233)))*43758.5453123);
+}
 
 void main(){
   // 画像のアスペクトとプレーンオブジェクトのアスペクトを比較し、短い方に合わせる
@@ -23,29 +26,22 @@ void main(){
     (vUv.y - 0.5) * ratio.y + 0.5
   );
 
-  // RGBシフト
-  // vec2 offset = vec2(0.0, iProgress * 0.1);
-  // float r = texture2D(iTexture, fixedUv + offset).r;
-  // float g = texture2D(iTexture, fixedUv + offset * 0.5).g;
-  // float b = texture2D(iTexture, fixedUv).b;
-  // vec4 texture = vec4(r, g, b, 1.0);
   vec4 texture = texture2D(iTexture, fixedUv);
   vec4 color = vec4(0.0);
 
   float border = 1.;
-    float h = 10.0;
-    float rnd = iProgress * (sin(vUv.x * 1320.0) * 0.3 + 1.0) / 2.0;
-    float maskValue1 = smoothstep(1. - h, 1., vUv.y + mix(-h/2., 1. - h/2., 1.0 - iProgress - rnd));
-    float maskValue2 = smoothstep(1. - h, 1., vUv.x + mix(-h/2., 1. - h/2., 1.0 - iProgress - rnd));
-    
-    float mask = maskValue1 * 2.0;
-
-
-    float borderGradient = 0.0001;
-    float final = smoothstep(border, border + borderGradient , mask);
-    vec4 transparent = vec4(0.0);
-    color = mix(texture, transparent, final);
-    color.a *= iProgress ;
+  float h = 10.0;
+  // float rnd = iProgress * (sin(vUv.x * 1320.0) * 0.3 + 1.0) / 2.0;
+  float rnd = random(vec2(vUv.x));
+  float maskValue1 = smoothstep(1. - h, 1., vUv.y + mix(-h/2., 1. - h/2., 1.0 - iProgress - rnd));
+  float maskValue2 = smoothstep(1. - h, 1., vUv.x + mix(-h/2., 1. - h/2., 1.0 - iProgress - rnd));
+  
+  float mask = maskValue1 * 2.0;
+  float borderGradient = 0.0001;
+  float final = smoothstep(border, border + borderGradient , mask);
+  vec4 transparent = vec4(0.0);
+  color = mix(texture, transparent, final);
+  color.a *= iProgress ;
 
   gl_FragColor = color;
 }

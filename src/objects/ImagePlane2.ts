@@ -29,8 +29,10 @@ export default class ImagePlane {
   public createMesh(img: HTMLImageElement): Promise<THREE.Mesh> {
     // console.log((this.size.y+ 18) * 10 - window.innerHeight)
     const rect = this.img.getBoundingClientRect();
-    const x = Math.floor(rect.width / FIX_SIZE)
-    const y = Math.floor(rect.height / FIX_SIZE)
+    const width = window.innerWidth
+    const height = window.innerHeight
+    const x = Math.floor(width / FIX_SIZE)
+    const y = Math.floor(height / FIX_SIZE)
     
     return new Promise((resolve) => {
       const loader = new THREE.TextureLoader()
@@ -39,12 +41,15 @@ export default class ImagePlane {
           iTexture: { value: texture },
           iImageAspect: { value: img.naturalWidth / img.naturalHeight },
           iPlaneAspect: { value: img.clientWidth / img.clientHeight },
+          iPlaneSize: { value: new THREE.Vector2(rect.width, rect.height) },
           iOffset: { value: 0 },
           iTime: { value: 0 },
           iProgress: { value: 0 },
           iSegments: { value: new THREE.Vector2(x, y) },
           iColorMode: { value: 0 },
           iVisible: { value: false },
+          iResolution: { value: new THREE.Vector2(width, height) },
+          iGridSize: { value: FIX_SIZE },
         };
         const geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
         const material = new THREE.ShaderMaterial({
@@ -66,13 +71,17 @@ export default class ImagePlane {
   public resize(size: { x: number, y: number }) {
     this.size = size
 
+    const width = window.innerWidth
+    const height = window.innerHeight
     const material: THREE.ShaderMaterial = this.mesh?.material as THREE.ShaderMaterial
 
     if (material) {
       const rect = this.img.getBoundingClientRect();
-      const x = Math.floor(rect.width / FIX_SIZE)
-      const y  = Math.floor(rect.height / FIX_SIZE)
+      const x = Math.floor(width / FIX_SIZE)
+      const y = Math.floor(height / FIX_SIZE)
       material.uniforms.iSegments.value = new THREE.Vector2(x, y)
+      material.uniforms.iResolution.value = new THREE.Vector2(width, height)
+      material.uniforms.iPlaneSize.value = new THREE.Vector2(rect.width, rect.height)
     }
   }
 
