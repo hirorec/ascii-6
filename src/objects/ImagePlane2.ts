@@ -27,12 +27,12 @@ export default class ImagePlane {
   }
 
   public createMesh(img: HTMLImageElement): Promise<THREE.Mesh> {
-    // console.log((this.size.y+ 18) * 10 - window.innerHeight)
     const rect = this.img.getBoundingClientRect();
     const width = window.innerWidth
     const height = window.innerHeight
     const x = Math.floor(width / FIX_SIZE)
     const y = Math.floor(height / FIX_SIZE)
+    // console.log(rect.x)
     
     return new Promise((resolve) => {
       const loader = new THREE.TextureLoader()
@@ -50,6 +50,7 @@ export default class ImagePlane {
           iVisible: { value: false },
           iResolution: { value: new THREE.Vector2(width, height) },
           iGridSize: { value: FIX_SIZE },
+          iPosition: { value: new THREE.Vector2(rect.x, rect.y) },
         };
         const geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
         const material = new THREE.ShaderMaterial({
@@ -82,6 +83,7 @@ export default class ImagePlane {
       material.uniforms.iSegments.value = new THREE.Vector2(x, y)
       material.uniforms.iResolution.value = new THREE.Vector2(width, height)
       material.uniforms.iPlaneSize.value = new THREE.Vector2(rect.width, rect.height)
+      material.uniforms.iPosition.value = new THREE.Vector2(rect.x, rect.y)
     }
   }
 

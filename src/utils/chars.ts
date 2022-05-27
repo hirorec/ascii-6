@@ -31,9 +31,10 @@ export const createCharsMap = (black: boolean = false, transparent: boolean = fa
   
   str.split('').forEach((char, i) => {
     if (i === 0) {
-      ctx.fillRect(fontSize / 2, fontSize / 2, 1, 1);
+      ctx.fillRect(fontSize / 2, fontSize / 2, 2, 2);
+      // ctx.fillRect(0.5, 0.5, 20, 20);
     } else {
-      ctx.fillText(char, fontSize * i + 4, 1.5)
+      ctx.fillText(char, fontSize * i + 4, 1)
     }
   })
 

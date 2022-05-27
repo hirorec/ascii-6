@@ -11,6 +11,7 @@ uniform vec2 iSegments;
 uniform vec2 iResolution;
 uniform vec2 iPlaneSize;
 uniform float iGridSize;
+uniform vec2 iPosition;
 uniform int iColorMode;
 uniform bool iVisible;
 
@@ -44,70 +45,40 @@ void main(){
   vec4 texture1 = texture2D(iTexture, fixedUv);
 
   vec2 size = iSegments * (iPlaneSize / iResolution);
+  float mx = mod(iPosition.x, iGridSize);
+  mx = mx / iResolution.x;
+  vec2 gap = vec2(mx, 0.);
   vec2 uv = vUv;
-  uv -= 0.5;
+  uv -= gap;
   uv = floor(uv * size) / size;
-  uv += 0.5;
+  uv += gap;
   
   vec4 texture2 = texture2D(iTexture, uv);
   float grayColor = dot(texture2.rgb, monochromeScale);
   grayColor = 1.0 - smoothstep(0.0, 1.0, grayColor);
 
-  // vec4 texture3 = texture2D(iTexture, fixedUv);
-  // float grayColor2 = dot(texture3.rgb, monochromeScale);
-  // grayColor2 = 1.0 - smoothstep(0.0, 1.0, grayColor2);
-
-  // float threshold = 0.1;
-  // float a = step(threshold, (1.0 - x) * iProgress);
-
   vec4 color = texture1;
   vec4 gray = vec4(1.0 - grayColor);
-
-  // if (iColorMode == 0) {
-  //   gray = vec4(grayColor);
-  // }
 
   float p = iProgress / 2.0;
   p = pow(p, 1.8);
 
-  // color.rgb = mix(vec4(1.0 - grayColor2).rgb, color.rgb, smoothstep(1.7, 2.0, iProgress));
-  
+
   float grad = (1.0 - vUv.y) - (1.0 - iProgress);
   float threshold = 0.85;
 
   if (color.a > 0.0) {
     if (iColorMode == 0) {
-      // color.a = smoothstep(0.85, 1.0, (((1.0 - grayColor) * p) + p));
       color.a = step(threshold, (((1.0 - grayColor) * p) + p));
     } else {
-      // color.a = smoothstep(0.85, 1.0, ((grayColor * p) + p));
       if (iProgress > threshold) {
-        // color.a = step(threshold, mix(grayColor, grad, 0.8));
-        // color.a = smoothstep(threshold, 1.0, mix(grayColor, grad, iProgress));
         color.a = step(threshold, ((grayColor * p) + p));
       } else {
         color.a = 0.0;
       }
-      
-      // color.a = smoothstep(0.85, 1.0, mix(grayColor, grad, iProgress));
-      // color.a *= iProgress;
     }
   }
   
-  // color.a = 0.0;
-  
-  // color.a = step(0.9, ((grayColor * p) + p) / 1.0);
-
-  // float border = 1.;
-  // float h = 2000.0;
-	// float maskValue = smoothstep(1. - h, 1., x + mix(-h/2., 1. - h/2., 1.0 - iProgress));
-  // float mask = maskValue * 2.0;
-  // float borderGradient = 0.0001;
-  // float final = smoothstep(border, border + borderGradient , mask);
-  // vec4 transparent = vec4(0.0);
-  // color = mix(texture1, transparent, final);
-
-  // gl_FragColor = vec4(vec3(color.a), 1.0);
   gl_FragColor = color;
   // gl_FragColor = vec4(vec3(texture2.rgb), 0.8);
   // gl_FragColor = vec4(vUv.x, vUv.y, 0.0, 1.0);
